@@ -1,8 +1,8 @@
 
-const add = (a,b) => { return a+b }
-const subtract = (a,b) => { return a-b }
-const multiply = (a,b) => { return a*b }
-const divide = (a,b) => { return a/b }
+const add = (a,b) => { return Math.round(((a+b) + Number.EPSILON) * 100) / 100 }
+const subtract = (a,b) => { return Math.round(((a-b) + Number.EPSILON) * 100) / 100 }
+const multiply = (a,b) => { return Math.round(((a*b) + Number.EPSILON) * 100) / 100 }
+const divide = (a,b) => { return Math.round(((a/b) + Number.EPSILON) * 100) / 100 }
 
 let actual = '';
 let previous = '';
@@ -23,6 +23,8 @@ const operate = (operator, num1, num2) => {
 const keys = document.querySelectorAll('.key');
 
 function pressNumber(evt){
+    evt.target.classList.add('key-pressed');
+    
     let pressedText = evt.target.textContent;
     let displayActual = document.querySelector('.actual');
 
@@ -31,7 +33,9 @@ function pressNumber(evt){
     actual = displayActual.textContent;
 }
 
-function clearDisplay(){
+function clearDisplay(evt){
+    evt.target.classList.add('key-pressed');
+
     let displayActual = document.querySelector('.actual');
     let displayPrevious = document.querySelector('.previous');
 
@@ -43,7 +47,13 @@ function clearDisplay(){
 }
 
 function pressOperator(evt){
+    evt.target.classList.add('key-pressed');
+
     let operatorText = evt.target.textContent;
+
+    if (actual == ''){
+        return;
+    }
 
     if (document.querySelector('.previous').textContent == ''){
         previous = actual+operatorText;
@@ -55,6 +65,11 @@ function pressOperator(evt){
         let prevOperatorText = previous.slice(-1);
         let prevOperatorNum = Number.parseFloat(previous.slice(0, -1));
         let actualNum = Number.parseFloat(actual);
+
+        if (prevOperatorText == '/' && actualNum == 0){
+            window.alert('ERROR: TRIED TO DIVIDE BY 0');
+            return;
+        }
 
         let result = operate(prevOperatorText, prevOperatorNum, actualNum);
 
@@ -69,12 +84,22 @@ function pressOperator(evt){
 
 }
 
-function equals(){
+function equals(evt){
+    evt.target.classList.add('key-pressed');
+
+    if(actual == '' || previous == ''){
+        return;
+    }
     let prevOperatorText = previous.slice(-1);
     let prevOperatorNum = Number.parseFloat(previous.slice(0, -1));
     let actualNum = Number.parseFloat(actual);
 
     let result = operate(prevOperatorText, prevOperatorNum, actualNum);
+
+    if (prevOperatorText == '/' && actualNum == 0){
+        window.alert('ERROR: TRIED TO DIVIDE BY 0');
+        return;
+    }
 
     actual = result.toString();
     previous = '';
@@ -96,4 +121,5 @@ keys.forEach((k) =>{
     if('=' == k.textContent){
         k.addEventListener('click', equals);
     }
+    k.addEventListener('transitionend', () => k.classList.remove('key-pressed'));
 });

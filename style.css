@@ -39,6 +39,7 @@ body{
     gap: 2px;
 }
 .key{
+    border-radius: 4px;
     background-color: rgb(151, 165, 179);
     width: 24.5%;
     aspect-ratio: 1/1;
@@ -47,4 +48,10 @@ body{
     justify-content: center;
     font-size: 30px;
     cursor: pointer;
+    transition-duration: 0.07s;
+    font-weight: bolder;
+}
+.key-pressed{
+    transform: scale(1.05);
+    background-color: rgb(83, 91, 98);
 }
